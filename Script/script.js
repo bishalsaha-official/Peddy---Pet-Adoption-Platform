@@ -67,8 +67,7 @@ const displayPets = (pets) => {
             <h2 class="font-bold text-2xl">${item.pet_name}</h2>
             <ul class="my-4 text-gray-600">
                 <li><i class="fa-solid fa-bread-slice"></i> <span>Breed: ${item.breed}</span></li>
-                <li><i class="fa-regular fa-calendar"></i>  <span>Birth: ${item.date_of_birth
-                }</span></li>
+                <li><i class="fa-regular fa-calendar"></i>  <span>Birth: ${item.date_of_birth}</span></li>
                 <li><i class="fa-solid fa-paw"></i> <span>Gender: ${item.gender}</span></li>
                 <li><i class="fa-solid fa-dollar-sign"></i> <span>Price: ${item.price}</span></li>
             </ul>
@@ -76,12 +75,41 @@ const displayPets = (pets) => {
             <div class="flex justify-between mt-5">
                 <button onClick="loadLikedItem(${item.petId})" class="btn text-[#0E7A81]"><i class="fa-regular fa-thumbs-up"></i></button>
                 <button class="btn text-[#0E7A81]">Adopt</button>
-                <button class="btn text-[#0E7A81]">Details</button>
+                <button onClick="loadDetails(${item.petId})" class="btn text-[#0E7A81]">Details</button>
             </div>
         </div>
         `
         displayItem.appendChild(div)
     })
+}
+
+// Load Item Details
+const loadDetails = async (videoId) => {
+    const uri = `https://openapi.programming-hero.com/api/peddy/pet/${videoId}`
+    const res = await  fetch(uri);
+    const data = await res.json();
+    displayDetails(data.petData)
+}
+
+// Display Item Details
+const displayDetails = (details) => {
+    console.log(details)
+    const modalContent = document.getElementById('modal-content');
+    modalContent.innerHTML = `
+    <div>
+        <img class="w-full mb-4" src=${details.image} />
+        <h2 class="font-bold mb-4 text-3xl">${details.pet_name}</h2>
+        <ul class="my-4 text-gray-600">
+                <li><i class="fa-solid fa-bread-slice"></i> <span>Breed: ${details.breed}</span></li>
+                <li><i class="fa-regular fa-calendar"></i>  <span>Birth: ${details.date_of_birth}</span></li>
+                <li><i class="fa-solid fa-paw"></i> <span>Gender: ${details.gender}</span></li>
+                <li><i class="fa-solid fa-dollar-sign"></i> <span>Price: ${details.price}</span></li>
+        </ul>
+        <hr>
+        <p class="my-5 text-gray-600">${details.pet_details}</p>
+    </div>
+    `
+    document.getElementById('modalBtn').click();
 }
 
 loadCategory()
