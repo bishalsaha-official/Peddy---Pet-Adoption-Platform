@@ -11,7 +11,7 @@ const displayCategories = (categories) => {
     categories.forEach((item) => {
         const buttonDiv = document.createElement('div');
         buttonDiv.innerHTML = `
-        <button id='btnPetItem' onClick="loadPetCategory(${item.category})" class="btn py-10 px-10 w-72">
+        <button id='btn-${item.category}' onClick="loadPetCategory('${item.category}')" class="category-btn btn py-10 px-10 w-72">
             <img src=${item.category_icon} /> 
             <p class="font-bold ml-3">${item.category}</p>
         </button>
@@ -20,15 +20,31 @@ const displayCategories = (categories) => {
     })
 }
 
+
+// Remove Active Class
+const removeActiveClass = () => {
+    const buttons = document.getElementsByClassName('category-btn');
+    for(btn of buttons){
+        btn.classList.remove('active')
+    }
+}
+
 // Load display Pets by Category
-const loadPetCategory =  (pet) => {
+const loadPetCategory = (pet) => {
     fetch(`https://openapi.programming-hero.com/api/peddy/category/${pet}`)
         .then(res => res.json())
-        .then(data => console.log(data))
+        .then(data => {
+            displayPets(data.data)
+            // Remove active class
+            removeActiveClass()
+            // Active Category Button
+            const activeBtn = document.getElementById(`btn-${pet}`)
+            activeBtn.classList.add('active')
+        })
 }
 
 // Load Liked Pet Item
-const loadLikedItem = (id) =>{
+const loadLikedItem = (id) => {
     fetch(`https://openapi.programming-hero.com/api/peddy/pet/${id}`)
         .then(res => res.json())
         .then(data => displayLikedPet(data.petData))
@@ -55,6 +71,18 @@ const loadPets = () => {
 // Display Pets
 const displayPets = (pets) => {
     const displayItem = document.getElementById('display-item');
+    displayItem.innerHTML = '';
+    if (pets.length == 0) {
+        displayItem.innerHTML = `
+        <div class="col-span-3 text-center">
+            <img class="mx-auto mb-5" src="images/error.webp" />
+            <h2 class="font-bold mb-4 text-3xl">No Content Available<h2>
+            <p class="max-w-2xl mx-auto">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a.</p>
+        </div>
+        `
+        return
+    }
+
     pets.forEach(item => {
         // console.log(item)
         const div = document.createElement('div');
@@ -70,6 +98,7 @@ const displayPets = (pets) => {
                 <li><i class="fa-regular fa-calendar"></i>  <span>Birth: ${item.date_of_birth}</span></li>
                 <li><i class="fa-solid fa-paw"></i> <span>Gender: ${item.gender}</span></li>
                 <li><i class="fa-solid fa-dollar-sign"></i> <span>Price: ${item.price}</span></li>
+                
             </ul>
             <hr>
             <div class="flex justify-between mt-5">
@@ -86,14 +115,13 @@ const displayPets = (pets) => {
 // Load Item Details
 const loadDetails = async (videoId) => {
     const uri = `https://openapi.programming-hero.com/api/peddy/pet/${videoId}`
-    const res = await  fetch(uri);
+    const res = await fetch(uri);
     const data = await res.json();
     displayDetails(data.petData)
 }
 
 // Display Item Details
 const displayDetails = (details) => {
-    console.log(details)
     const modalContent = document.getElementById('modal-content');
     modalContent.innerHTML = `
     <div>
